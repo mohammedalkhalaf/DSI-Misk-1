@@ -1,0 +1,53 @@
+---
+title: "Chickwts analysis"
+output: html_document
+---
+```{r,echo=FALSE, message=FALSE}
+library(knitr)
+library(tidyverse)
+library(DT)
+options(knitr.table.format = "html")
+```
+
+
+**Descriptive Statistics** \
+```{r }
+
+table1 <- chickwts %>% 
+  group_by(feed) %>% 
+  summarise(n = n(),
+           avrage = mean(weight),
+           SD = sd(weight)) 
+datatable(table1)
+
+```
+\ **plots** \
+```{r}
+chickwts %>% 
+  ggplot( aes ( x=feed , y=weight) ) + geom_boxplot()
+```
+
+```{r}
+chickwts %>% 
+  ggplot( aes ( x=feed , y=weight)) +
+  geom_jitter() +
+  stat_summary(fun.data = mean_sdl, # add the mean and the Std. Dev.
+               fun.args = list(mult = 1),  # Add onlye 1 std. Dev.
+               col = "red") 
+```
+\ **one way anova** \
+```{r}
+chick_lm <- lm( weight ~ feed , data = chickwts)
+
+chick_lm %>% 
+  anova()
+```
+\ **Tukey’s Post-hoc test:** \
+```{r}
+tuk <- TukeyHSD(aov( weight ~ feed , data = chickwts))$feed 
+datatable(tuk)
+```
+\
+```{r}
+
+```
